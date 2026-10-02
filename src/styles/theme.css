@@ -1,0 +1,18 @@
+:root {
+  --color-primary: #007C83;
+  --color-primary-dark: #005B63;
+  --color-accent: #E85D4A;
+  --color-background: #F3FBFA;
+  --color-surface: #FFFFFF;
+  --color-text: #12333A;
+  --color-text-muted: #4D686D;
+  --color-border: #CFE5E3;
+  --color-wordmark-gold: #D59A2A;
+  --color-train: #238B57;
+  --color-bus: #D94F45;
+  --color-car: #1685B5;
+  --color-three-wheel: #C98B1F;
+  --color-traffic-low: #167A4D;
+  --color-traffic-medium: #9A6500;
+  --color-traffic-high: #C63F38;
+}

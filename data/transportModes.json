@@ -1,0 +1,6 @@
+[
+  { "id": "train", "name": "Train" },
+  { "id": "bus", "name": "Bus" },
+  { "id": "car", "name": "Car" },
+  { "id": "three-wheel", "name": "Three-wheel" }
+]
