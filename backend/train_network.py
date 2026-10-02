@@ -1,11 +1,12 @@
 import json
 import math
+import os
 from collections import deque
-from pathlib import Path
 
 MAXIMUM_STATION_ACCESS_KM = 3
-NETWORK_PATH = Path(__file__).resolve().parent.parent / "shared" / "trainNetwork.json"
-TRAIN_NETWORK = json.loads(NETWORK_PATH.read_text(encoding="utf-8"))
+NETWORK_PATH = os.path.join(os.path.dirname(__file__), "..", "shared", "trainNetwork.json")
+with open(NETWORK_PATH, encoding="utf-8") as network_file:
+    TRAIN_NETWORK = json.load(network_file)
 
 
 def _distance_km(from_latitude: float, from_longitude: float, to_latitude: float, to_longitude: float) -> float:
