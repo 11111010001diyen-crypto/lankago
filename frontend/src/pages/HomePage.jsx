@@ -23,6 +23,7 @@ import { getTrainStationPlace } from '../data/sriLankaPlaces'
 import { searchLocalSriLankanPlaces } from '../utils/placeSearch'
 
 const modeImages = { train: trainImage, bus: busImage, car: carImage, 'three-wheel': threeWheelImage }
+const placeInputValue = (place) => place ? `${place.name} · ${place.area}` : ''
 const quickLinks = [{ label: 'Google Maps', href: 'https://maps.google.com', detail: 'Open directions', image: mapsImage }, { label: 'PickMe', href: 'https://www.pickme.lk', detail: 'Book a local ride', image: pickMeImage }, { label: 'Uber', href: 'https://www.uber.com/global/en/r/sri-lanka/cities/', detail: 'Explore ride options', image: uberImage }]
 const comingSoonModes = [{ label: 'Flights', image: flightImage }, { label: 'Ship', image: shipImage }, { label: 'Heavy Vehicles', image: lorryImage }]
 const homeStats = [{ title: 'Journeys Compared', subtitle: 'Routes explored with LankaGo', value: '1,240+', badgeText: '12.5%', badgeDirection: 'up', subtext: 'Compared with last month' }, { title: 'Avg. Savings Found', subtitle: 'Potential fare savings', value: '23%', badgeText: '4.2%', badgeDirection: 'up', subtext: 'More than last month' }, { title: 'Transport Modes', subtitle: 'Available for comparison', value: '4', badgeText: 'All active', badgeDirection: 'neutral', subtext: 'Train, bus, car and three-wheel' }]
@@ -67,7 +68,7 @@ function PlaceSearchField({ id, label, value, onChange, onSelect, selectedPlace,
   useEffect(() => {
     const query = value.trim()
     requestRef.current?.abort()
-    if (query.length < minimumPlaceSearchLength || selectedPlace?.label === value) return undefined
+    if (query.length < minimumPlaceSearchLength || placeInputValue(selectedPlace) === value) return undefined
     const timer = window.setTimeout(() => { setSuggestions(searchLocalSriLankanPlaces(query)); setStatus('local') }, placeSearchDelayMs)
     return () => window.clearTimeout(timer)
   }, [value, selectedPlace])
@@ -95,15 +96,15 @@ function PlaceSearchField({ id, label, value, onChange, onSelect, selectedPlace,
     setStatus('idle')
     onSelect(place)
   }
-  const hasCurrentQuery = value.trim().length >= minimumPlaceSearchLength && selectedPlace?.label !== value
+  const hasCurrentQuery = value.trim().length >= minimumPlaceSearchLength && placeInputValue(selectedPlace) !== value
 
-  return <div className="input-field place-search"><label htmlFor={id}>{label}<span className="required"> *</span></label><input id={id} className="place-search__input" name={id} value={value} onChange={onChange} placeholder="Search anywhere in Sri Lanka" autoComplete="off" aria-autocomplete="list" aria-expanded={hasCurrentQuery && suggestions.length > 0} aria-controls={`${id}-suggestions`} aria-invalid={Boolean(error)} required />{hasCurrentQuery && status === 'loading' && <p className="place-search__message">Searching places…</p>}{hasCurrentQuery && status === 'empty' && <p className="place-search__message">No additional places found in Sri Lanka. Try another search.</p>}{hasCurrentQuery && status === 'error' && <p className="place-search__message place-search__message--error">We could not search for places right now. <button type="button" className="place-search__retry" onClick={searchMorePlaces}>Try again</button></p>}{hasCurrentQuery && suggestions.length > 0 && <ul id={`${id}-suggestions`} className="place-search__list" role="listbox">{suggestions.map((place) => <li key={`${place.label}-${place.latitude}-${place.longitude}`} role="option" aria-selected="false"><button type="button" className="place-search__option" title={place.fullAddress || place.label} onClick={() => selectPlace(place)}><strong>{place.label}</strong>{place.fullAddress && <small>{place.fullAddress}</small>}</button></li>)}</ul>}{hasCurrentQuery && status !== 'loading' && <button type="button" className="place-search__more" onClick={searchMorePlaces}>Search more places</button>}{error && <p className="field-error">{error}</p>}</div>
+  return <div className="input-field place-search"><label htmlFor={id}>{label}<span className="required"> *</span></label><input id={id} className="place-search__input" name={id} value={value} onChange={onChange} placeholder="Search anywhere in Sri Lanka" autoComplete="off" aria-autocomplete="list" aria-expanded={hasCurrentQuery && suggestions.length > 0} aria-controls={`${id}-suggestions`} aria-invalid={Boolean(error)} required />{hasCurrentQuery && status === 'loading' && <p className="place-search__message">Searching places…</p>}{hasCurrentQuery && status === 'empty' && <p className="place-search__message">No additional places found in Sri Lanka. Try another search.</p>}{hasCurrentQuery && status === 'error' && <p className="place-search__message place-search__message--error">We could not search for places right now. <button type="button" className="place-search__retry" onClick={searchMorePlaces}>Try again</button></p>}{hasCurrentQuery && suggestions.length > 0 && <ul id={`${id}-suggestions`} className="place-search__list" role="listbox">{suggestions.map((place) => <li key={`${place.name}-${place.latitude}-${place.longitude}`} role="option" aria-selected="false"><button type="button" className="place-search__option" title={place.fullAddress} onClick={() => selectPlace(place)}><strong>{place.name}</strong><small>{place.area}</small></button></li>)}</ul>}{hasCurrentQuery && status !== 'loading' && <button type="button" className="place-search__more" onClick={searchMorePlaces}>Search more places</button>}{error && <p className="field-error">{error}</p>}</div>
 }
 
 function TrainStationSearchField({ id, label, value, onChange, onSelect, selectedPlace, error }) {
   const [status, setStatus] = useState('idle')
   const query = value.trim().toLowerCase()
-  const suggestions = query && selectedPlace?.label !== value ? allTrainStations.filter((station) => station.toLowerCase().includes(query)) : []
+  const suggestions = query && placeInputValue(selectedPlace) !== value ? allTrainStations.filter((station) => station.toLowerCase().includes(query)) : []
 
   const selectStation = async (station) => {
     setStatus('loading')
@@ -115,7 +116,7 @@ function TrainStationSearchField({ id, label, value, onChange, onSelect, selecte
     }
   }
 
-  return <div className="input-field place-search"><label htmlFor={id}>{label}<span className="required"> *</span></label><input id={id} className="place-search__input" name={id} value={value} onChange={onChange} placeholder="Search Sri Lanka Railways stations" autoComplete="off" aria-autocomplete="list" aria-expanded={suggestions.length > 0} aria-controls={`${id}-suggestions`} aria-invalid={Boolean(error)} required />{status === 'loading' && <p className="place-search__message">Looking up station…</p>}{query && selectedPlace?.label !== value && status !== 'loading' && suggestions.length === 0 && <p className="place-search__message">No matching Sri Lanka Railways station found.</p>}{status === 'error' && <p className="place-search__message place-search__message--error">We could not look up that station right now. Please try again.</p>}{suggestions.length > 0 && status !== 'loading' && <ul id={`${id}-suggestions`} className="place-search__list" role="listbox">{suggestions.map((station) => <li key={station} role="option" aria-selected="false"><button type="button" className="place-search__option" onClick={() => selectStation(station)}>{station}</button></li>)}</ul>}{error && <p className="field-error">{error}</p>}</div>
+  return <div className="input-field place-search"><label htmlFor={id}>{label}<span className="required"> *</span></label><input id={id} className="place-search__input" name={id} value={value} onChange={onChange} placeholder="Search Sri Lanka Railways stations" autoComplete="off" aria-autocomplete="list" aria-expanded={suggestions.length > 0} aria-controls={`${id}-suggestions`} aria-invalid={Boolean(error)} required />{status === 'loading' && <p className="place-search__message">Looking up station…</p>}{query && placeInputValue(selectedPlace) !== value && status !== 'loading' && suggestions.length === 0 && <p className="place-search__message">No matching Sri Lanka Railways station found.</p>}{status === 'error' && <p className="place-search__message place-search__message--error">We could not look up that station right now. Please try again.</p>}{suggestions.length > 0 && status !== 'loading' && <ul id={`${id}-suggestions`} className="place-search__list" role="listbox">{suggestions.map((station) => <li key={station} role="option" aria-selected="false"><button type="button" className="place-search__option" onClick={() => selectStation(station)}>{station}</button></li>)}</ul>}{error && <p className="field-error">{error}</p>}</div>
 }
 
 export function HomePage() {
@@ -148,15 +149,15 @@ export function HomePage() {
     setErrors((current) => ({ ...current, [name]: '' }))
   }
   const selectPlace = (field, place) => {
-    setForm((current) => ({ ...current, [field]: place.label }))
+    setForm((current) => ({ ...current, [field]: placeInputValue(place) }))
     setPlaces((current) => ({ ...current, [field]: place }))
     setErrors((current) => ({ ...current, [field]: '' }))
   }
   const selectTrainStation = async (field, station) => {
     const stationPlace = getTrainStationPlace(station)
     if (!stationPlace) throw new Error('STATION_LOOKUP_FAILED')
-    setForm((current) => ({ ...current, [field]: station }))
-    setPlaces((current) => ({ ...current, [field]: { ...stationPlace, label: station } }))
+    setForm((current) => ({ ...current, [field]: placeInputValue(stationPlace) }))
+    setPlaces((current) => ({ ...current, [field]: stationPlace }))
     setErrors((current) => ({ ...current, [field]: '' }))
   }
   const submit = async (event) => {

@@ -8,6 +8,7 @@ import threeWheelImage from '../assets/icons/three-wheel.png'
 import { Button } from '../components/Button'
 import { AuthenticatedTopbar } from '../components/AuthenticatedTopbar'
 import { OptionCard } from '../components/OptionCard'
+import { JourneyRoute } from '../components/JourneyRoute'
 import { busSubTypes, getRecommendations, trainClasses } from '../logic/recommendation'
 import { quoteQuantitySummary } from '../logic/pricing'
 import { getBookingSearchError } from '../utils/bookingValidation'
@@ -39,7 +40,7 @@ function ResultsContent({ search }) {
   return <main className="page">
     <AuthenticatedTopbar><button className="text-button" onClick={() => navigate('/home')}>← Edit search</button></AuthenticatedTopbar>
     <div className="content results">
-      <p className="eyebrow">{search.from} <span>→</span> {search.to}</p>
+      <JourneyRoute from={search.fromPlace} to={search.toPlace} className="journey-route--summary" />
       <h1>Your journey options</h1>
       <p className="page-intro">Estimates for {search.date || 'your selected date'} · detected {search.departureTime} · detected {search.weather.toLowerCase()} weather · about {directDistanceKm} km direct distance.</p>
       {directDistanceKm < 3 && <aside className="travel-tip" role="status">Short trip: a Three-wheel or Car is usually the most practical.</aside>}
@@ -72,8 +73,8 @@ function ResultsContent({ search }) {
       <div className="selection-summary">
         Selected: <strong>{selectedOption.name}{selectedOption.subOptionLabel ? ` · ${selectedOption.subOptionLabel}` : ''} · LKR {selectedOption.totalPrice.toLocaleString()} total</strong>
         <small className="selection-summary__helper">{quantitySummary}</small>
-        <Button onClick={() => navigate('/passenger-details', { state: { search, option: selectedOption } })}>Continue</Button>
-      </div>
+        <Button onClick={() => navigate('/passenger-details', { state: { search: { ...search, busSubType, trainClass }, option: selectedOption } })}>Continue</Button>
     </div>
-  </main>
+  </div>
+  </main >
 }

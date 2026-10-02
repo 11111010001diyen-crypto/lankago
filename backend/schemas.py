@@ -23,6 +23,10 @@ class ForgotPasswordRequest(BaseModel):
 class BookingRequest(BaseModel):
     from_location: str = Field(min_length=1, max_length=180)
     to_location: str = Field(min_length=1, max_length=180)
+    from_name: str | None = Field(default=None, min_length=1, max_length=120)
+    from_area: str | None = Field(default=None, min_length=1, max_length=120)
+    to_name: str | None = Field(default=None, min_length=1, max_length=120)
+    to_area: str | None = Field(default=None, min_length=1, max_length=120)
     travel_date: date
     mode: Literal["train", "bus", "car", "three-wheel"]
     bus_type: str | None = Field(default=None, max_length=80)

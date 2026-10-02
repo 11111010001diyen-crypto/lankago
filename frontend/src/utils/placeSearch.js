@@ -15,9 +15,9 @@ function matchRank(place, query) {
   if (normalisePlaceSearchText(place.name).startsWith(normalisedQuery)) return 1
   if (nameAndAliases.some((candidate) => words(candidate).some((word) => word.startsWith(normalisedQuery)))) return 2
   if (nameAndAliases.some((candidate) => normalisePlaceSearchText(candidate).includes(normalisedQuery))) return 3
-  if (normalisePlaceSearchText(place.district) === normalisedQuery) return 4
-  if (words(place.district).some((word) => word.startsWith(normalisedQuery))) return 5
-  return normalisePlaceSearchText(place.district).includes(normalisedQuery) ? 6 : -1
+  if (normalisePlaceSearchText(place.area) === normalisedQuery) return 4
+  if (words(place.area).some((word) => word.startsWith(normalisedQuery))) return 5
+  return normalisePlaceSearchText(place.area).includes(normalisedQuery) ? 6 : -1
 }
 
 export function searchLocalSriLankanPlaces(query, limit = 6) {
@@ -27,7 +27,7 @@ export function searchLocalSriLankanPlaces(query, limit = 6) {
 export function formatExternalPlace(result) {
   const address = result.address || {}
   const name = result.name || result.display_name?.split(',')[0]?.trim()
-  const district = address.city || address.town || address.village || address.county || address.state_district || 'Sri Lanka'
+  const area = address.suburb || address.city_district || address.city || address.town || address.village || address.county || address.state_district || 'Sri Lanka'
   const province = address.state || address.province || ''
-  return { name, label: `${name} · ${district}`, fullAddress: result.display_name || name, district, province, latitude: Number(result.lat), longitude: Number(result.lon), aliases: [] }
+  return { name, area, fullAddress: result.display_name || name, province, latitude: Number(result.lat), longitude: Number(result.lon), aliases: [] }
 }

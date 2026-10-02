@@ -52,10 +52,10 @@ def create_booking(payload: BookingRequest, user=Depends(current_user)):
         try:
             booking = execute_returning(
                 """insert into public.bookings
-                (user_id, booking_reference, from_location, to_location, travel_date, mode, bus_type, train_class, passengers, units, unit_price, total_price, lead_passenger_name, passenger_names, seat_numbers, contact_number, assistance_notes, payment_method, payment_status)
-                values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (user_id, booking_reference, from_location, to_location, from_name, from_area, to_name, to_area, travel_date, mode, bus_type, train_class, passengers, units, unit_price, total_price, lead_passenger_name, passenger_names, seat_numbers, contact_number, assistance_notes, payment_method, payment_status)
+                values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 returning *""",
-                (user["id"], reference, payload.from_location.strip(), payload.to_location.strip(), payload.travel_date, payload.mode, payload.bus_type if payload.mode == "bus" else None, payload.train_class if payload.mode == "train" else None, payload.passengers, pricing["units"], pricing["unit_price"], pricing["total_price"], passenger_names[0], passenger_names, seat_numbers, payload.contact_number, payload.assistance_notes.strip() if payload.assistance_notes else None, payload.payment_method, payment_status),
+                (user["id"], reference, payload.from_location.strip(), payload.to_location.strip(), payload.from_name.strip() if payload.from_name else None, payload.from_area.strip() if payload.from_area else None, payload.to_name.strip() if payload.to_name else None, payload.to_area.strip() if payload.to_area else None, payload.travel_date, payload.mode, payload.bus_type if payload.mode == "bus" else None, payload.train_class if payload.mode == "train" else None, payload.passengers, pricing["units"], pricing["unit_price"], pricing["total_price"], passenger_names[0], passenger_names, seat_numbers, payload.contact_number, payload.assistance_notes.strip() if payload.assistance_notes else None, payload.payment_method, payment_status),
             )
             result = serialize(booking)
             result.update({"unit_label": pricing["unit_label"], "per_person_cost": pricing["per_person_cost"]})

@@ -17,13 +17,13 @@ const featuredPlaces = [
   ['Avissawella', 'Colombo', 'Sabaragamuwa Province', 6.9549, 80.2054], ['Kalpitiya', 'Puttalam', 'North Western Province', 8.233, 79.766], ['Adam’s Peak', 'Ratnapura', 'Sabaragamuwa Province', 6.8096, 80.4994, ['Adams Peak', 'Sri Pada']], ['Pinnawala', 'Kegalle', 'Sabaragamuwa Province', 7.3006, 80.3884], ['Udawalawe', 'Ratnapura', 'Sabaragamuwa Province', 6.425, 80.891], ['Horton Plains', 'Nuwara Eliya', 'Central Province', 6.802, 80.809]
 ]
 
-const toPlace = ([name, district, province, latitude, longitude, aliases = []]) => ({ name, district, province, latitude, longitude, aliases, label: `${name} · ${district}` })
+const toPlace = ([name, district, province, latitude, longitude, aliases = []]) => ({ name, area: district, fullAddress: `${name}, ${district}, ${province}, Sri Lanka`, province, latitude, longitude, aliases })
 const featuredByName = new Map(featuredPlaces.map((place) => { const item = toPlace(place); return [item.name, item] }))
-const stationPlaces = Object.entries(trainNetwork.stations).filter(([name]) => !featuredByName.has(name)).map(([name, [latitude, longitude]]) => ({ name, district: name, province: 'Sri Lanka', latitude, longitude, aliases: [], label: `${name} · Railway station` }))
+const stationPlaces = Object.entries(trainNetwork.stations).filter(([name]) => !featuredByName.has(name)).map(([name, [latitude, longitude]]) => ({ name, area: 'Railway station', fullAddress: `${name} railway station, Sri Lanka`, province: 'Sri Lanka', latitude, longitude, aliases: [] }))
 
 export const sriLankaPlaces = [...featuredByName.values(), ...stationPlaces]
 
 export function getTrainStationPlace(stationName) {
   const coordinates = trainNetwork.stations[stationName]
-  return coordinates ? { name: stationName, label: stationName, fullAddress: `${stationName} railway station, Sri Lanka`, district: stationName, province: 'Sri Lanka', latitude: coordinates[0], longitude: coordinates[1] } : null
+  return coordinates ? { name: stationName, area: 'Railway station', fullAddress: `${stationName} railway station, Sri Lanka`, province: 'Sri Lanka', latitude: coordinates[0], longitude: coordinates[1], aliases: [] } : null
 }

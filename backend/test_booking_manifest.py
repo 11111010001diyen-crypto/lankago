@@ -4,10 +4,36 @@ from fastapi import HTTPException
 
 from backend.routers.bookings import prepare_passenger_manifest
 from backend.pricing import quote
+from backend.schemas import BookingRequest
 from backend.train_network import get_train_availability
 
 
 class PassengerManifestTests(unittest.TestCase):
+    def test_booking_request_accepts_structured_place_labels(self):
+        booking = BookingRequest(
+            from_location="Colombo, Colombo, Western Province, Sri Lanka",
+            to_location="Kandy, Kandy, Central Province, Sri Lanka",
+            from_name="Colombo",
+            from_area="Colombo",
+            to_name="Kandy",
+            to_area="Kandy",
+            travel_date="2026-10-03",
+            mode="car",
+            passengers=1,
+            from_latitude=6.9271,
+            from_longitude=79.8612,
+            to_latitude=7.2906,
+            to_longitude=80.6337,
+            departure_time="Midday",
+            weather="Clear",
+            lead_passenger_name="Asha Silva",
+            passenger_names=["Asha Silva"],
+            contact_number="0712345678",
+            payment_method="card",
+        )
+        self.assertEqual(booking.from_name, "Colombo")
+        self.assertEqual(booking.to_area, "Kandy")
+
     def test_train_requires_one_name_per_passenger_and_generates_seats(self):
         names, seats = prepare_passenger_manifest("train", 3, ["Asha Silva", "Nimal Perera", "Ravi Fernando"])
         self.assertEqual(names, ["Asha Silva", "Nimal Perera", "Ravi Fernando"])
