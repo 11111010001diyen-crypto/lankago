@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
@@ -12,8 +13,10 @@ import { RegisterPage } from './pages/RegisterPage'
 import { ResultsPage } from './pages/ResultsPage'
 import { AppFooter } from './components/AppFooter'
 
+const JourneyPage = lazy(() => import('./pages/JourneyPage'))
+
 function App() {
   const protectedPage = (Page) => <ProtectedRoute><Page /></ProtectedRoute>
-  return <BrowserRouter><AuthProvider><Routes><Route path="/register" element={<RegisterPage />} /><Route path="/login" element={<LoginPage />} /><Route path="/forgot-password" element={<ForgotPasswordPage />} /><Route path="/home" element={protectedPage(HomePage)} /><Route path="/results" element={protectedPage(ResultsPage)} /><Route path="/passenger-details" element={protectedPage(PassengerDetailsPage)} /><Route path="/payment" element={protectedPage(PaymentPage)} /><Route path="/confirmation" element={protectedPage(ConfirmationPage)} /><Route path="/my-bookings" element={protectedPage(MyBookingsPage)} /><Route path="*" element={<Navigate to="/register" replace />} /></Routes><AppFooter /></AuthProvider></BrowserRouter>
+  return <BrowserRouter><AuthProvider><Routes><Route path="/register" element={<RegisterPage />} /><Route path="/login" element={<LoginPage />} /><Route path="/forgot-password" element={<ForgotPasswordPage />} /><Route path="/journey" element={<Suspense fallback={<div className="journey-loading">Loading your journey…</div>}><JourneyPage /></Suspense>} /><Route path="/home" element={protectedPage(HomePage)} /><Route path="/results" element={protectedPage(ResultsPage)} /><Route path="/passenger-details" element={protectedPage(PassengerDetailsPage)} /><Route path="/payment" element={protectedPage(PaymentPage)} /><Route path="/confirmation" element={protectedPage(ConfirmationPage)} /><Route path="/my-bookings" element={protectedPage(MyBookingsPage)} /><Route path="*" element={<Navigate to="/register" replace />} /></Routes><AppFooter /></AuthProvider></BrowserRouter>
 }
 export default App
