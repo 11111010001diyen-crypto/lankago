@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from psycopg2.errors import UniqueViolation
 
@@ -9,9 +11,15 @@ from ..services.supabase_auth import send_reset_email, sign_in, sign_up
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
+TERMS_VERSION = "2026-10-15"
+
+
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest):
-    auth_result = sign_up(payload.email.strip().lower(), payload.password)
+    if not payload.accepted_terms:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Please agree to the Terms of Use and Privacy Policy to create an account.")
+    consent = {"accepted_terms_at": datetime.now(timezone.utc).isoformat(), "terms_version": TERMS_VERSION}
+    auth_result = sign_up(payload.email.strip().lower(), payload.password, consent)
     user = auth_result.get("user") or auth_result
     if user.get("identities") == []:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="That email is already registered. Please log in or check your inbox to confirm it.")

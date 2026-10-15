@@ -27,8 +27,11 @@ def _request(path: str, method: str = "POST", payload: dict | None = None, acces
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Authentication service is unavailable.") from error
 
 
-def sign_up(email: str, password: str):
-    return _request("/auth/v1/signup", payload={"email": email, "password": password})
+def sign_up(email: str, password: str, metadata: dict | None = None):
+    payload = {"email": email, "password": password}
+    if metadata:
+        payload["data"] = metadata
+    return _request("/auth/v1/signup", payload=payload)
 
 
 def sign_in(email: str, password: str):

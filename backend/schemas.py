@@ -9,6 +9,7 @@ class RegisterRequest(BaseModel):
     email: str = Field(min_length=3, max_length=254)
     phone: str = Field(pattern=r"^\d{10}$")
     password: str = Field(min_length=6, max_length=128)
+    accepted_terms: bool = False
 
 
 class LoginRequest(BaseModel):
